@@ -35,8 +35,8 @@ class News(models.Model):
     is_published = models.BooleanField(default=False, verbose_name='Статус')
     category = models.ForeignKey('Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категория')
     tags = models.ManyToManyField('TagPost', blank=True, related_name='tags', verbose_name='Теги')
-
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='posts', null=True, default=None)
+    comments = models.ManyToManyField('Comment', blank=True, related_name='comments', verbose_name='Комментарии')
 
     objects = models.Manager()
     published = PublishedManager()
@@ -90,3 +90,17 @@ class TagPost(models.Model):
 
 class UploadFiles(models.Model):
     file = models.FileField(upload_to='uploads_model')
+
+
+class Comment(models.Model):
+    content_com = models.TextField(blank=False, null=False, verbose_name='Комментарий')
+    time_created = models.DateTimeField(auto_now_add=True, verbose_name='Время написания')
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL , related_name='comments', null=True, blank=False)
+
+    def __str__(self):
+        return self.content_com
+
+    class Meta:
+        ordering = ['content_com']
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'

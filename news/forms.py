@@ -1,5 +1,5 @@
 from django import forms
-from .models import News, Category
+from .models import News, Category, Comment
 from django.core.validators import ValidationError
 
 
@@ -25,3 +25,12 @@ class AddPostForm(forms.ModelForm):
 
 class UploadFileForm(forms.Form):
     file = forms.ImageField(label='Файл')
+
+
+class AddCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content_com']
+        widgets = {
+            'content_com': forms.Textarea(attrs={'cols': 50, 'row': 5})
+        }

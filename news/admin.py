@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.utils.safestring import mark_safe
 
-from .models import News, Category
+from .models import News, Category, Comment
 
 #admin.site.register(News, NewsAdmin)
 @admin.register(News)
@@ -47,3 +47,15 @@ class NewsAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     list_display_links = ['name']
+
+
+class PostInline(admin.TabularInline):
+    model = News.comments.through
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    model = Comment
+    inlines = [
+        PostInline,
+    ]

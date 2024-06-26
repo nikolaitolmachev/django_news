@@ -8,6 +8,45 @@
     {% endif %}
 
     {{ post.content|linebreaks }}
+
+
+
+    {% if post.comments.all %}
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">Комментарии</h3>
+            </div>
+            {% for comment in post.comments.all %}
+                <p>{{ comment.time_created }} : {{ comment.author.username|default:"неизвестен" }}</p>
+                <p>{{ comment.content_com }}</p>
+                <hr/>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <div style="text-align: center">
+        <h3>Написать комментарий</h3>
+        <form action="" method="post">
+
+            {% csrf_token %}
+            {{ form.content_com }}
+            <input name="news_id" type="hidden" value="{{ post.id }}" />
+            <br/>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+        </div>
+    {% else %}
+        <div class="panel panel-warning">
+            {% if not post.comments.all %}
+                <div class="panel-heading">
+                    <h3 class="panel-title">Комментарии</h3>
+                </div>
+            {% endif %}
+            <div class="panel-body">
+                Только авторизованные пользователи могут оставлять комментарии.<br />
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -27,4 +66,5 @@
             </ul>
         {% endif %}
     {% endwith %}
+
 {% endblock %}

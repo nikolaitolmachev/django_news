@@ -1,11 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponseNotFound
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from .models import News, TagPost
-from .forms import AddPostForm
+from .forms import AddPostForm, AddCommentForm
 from .utils import DataMixin
 
 
@@ -24,10 +24,11 @@ def about(request):
     return render(request, 'news/about.html', {'title': 'О сайте'})
 
 
-class ShowPost(DataMixin, DetailView):
+class ShowPost(DataMixin, DetailView, CreateView):
     template_name = 'news/post.html'
     slug_url_kwarg = 'post_slug'
     context_object_name = 'post'
+    form_class = AddCommentForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -35,6 +36,17 @@ class ShowPost(DataMixin, DetailView):
 
     def get_object(self, queryset=None):
         return get_object_or_404(News.published, slug=self.kwargs[self.slug_url_kwarg])
+
+    def form_valid(self, form):
+        news = self.get_object()
+
+        comment = form.save(commit=False)
+        comment.author = self.request.user
+        comment.save()
+
+        news.comments.add(comment)
+
+        return redirect(self.request.META.get('HTTP_REFERER'))
 
 
 class AddPage(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, CreateView):
