@@ -1,2 +1,5 @@
 # django_news
-Nothing special, just it's a practice of using Django to create news portal.
+news platform (Django + PostgreSQL) with user registration and
+authorization, news creation and editing, category and tag filtering,
+commenting system, and a basic REST API with token authentication
+(Djoser)
